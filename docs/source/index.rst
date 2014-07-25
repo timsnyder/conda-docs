@@ -76,10 +76,6 @@ User Guide
    faq
    config
    build
-   build-tutorial-pkgs
-   build-tutorial-postgis
-   build-tutorial-from-a-directory
-   build-tutorial-shared-libraries
    admin
 
 Reference Guide
