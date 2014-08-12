@@ -156,6 +156,18 @@ All the metadata in the recipe is specified in the ``meta.yaml`` file. All secti
         - bin/binaryfile1
         - lib/binaryfile2
 
+      # should we ignore x11 related shared libraries when warning about
+      # external libraries?  Defaults to True
+      allow_xll: True
+
+      # additional libraries we should ignore when warning about shared
+      # libraries that live outside of build root.  DynamicLibrary subclasses may
+      # define their own list.  Those provided in extra_external are appended
+      # to that list
+      extra_external:
+        - libname1.so
+        - libname2.so
+
     # the build and runtime requirements. Dependencies of these requirements
     # are included automatically.
     requirements:
