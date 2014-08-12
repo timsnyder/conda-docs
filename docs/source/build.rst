@@ -158,7 +158,7 @@ All the metadata in the recipe is specified in the ``meta.yaml`` file. All secti
 
       # should we ignore x11 related shared libraries when warning about
       # external libraries?  Defaults to True
-      allow_xll: True
+      allow_x11 True
 
       # additional libraries we should ignore when warning about shared
       # libraries that live outside of build root.  DynamicLibrary subclasses may
