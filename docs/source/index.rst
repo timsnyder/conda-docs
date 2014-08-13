@@ -79,6 +79,7 @@ User Guide
    config
    build
    build_tutorials
+   link-errors
    admin
    custom-channels
 
