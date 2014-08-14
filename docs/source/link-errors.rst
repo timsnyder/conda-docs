@@ -7,6 +7,8 @@ Table of contents:
 
 #. :ref:`broken`
 #. :ref:`external`
+#. :ref:`common-issues`
+#. :ref:`related-settings`
 
 .. _broken:
 
@@ -80,3 +82,23 @@ You can squelch external linkage messages by adding elements to the ``extra_exte
 However, external linkages **should** be fixed if you want to distribute the built package.
 
 To fix external linkages ...
+
+.. _common-issues:
+
+Common issues
+=============
+
+Some common issues are
+
+#. Common issue 1
+#. Common issue 2
+
+.. _related-settings:
+
+Linkage related settings
+========================
+
+#. allow_x11
+#. extra_external
+#. forgiving
+#. allow_somethign_or_other
