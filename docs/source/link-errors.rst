@@ -90,7 +90,12 @@ Common issues
 
 Some common issues are
 
-#. Common issue 1
+#. A library is both a ``build`` **and** a ``run`` requirement but is only added as a ``build`` requirement.  Common examples are
+
+   #. building with gcc but not realizing that libgcc is linked against
+
+   #. libgfortran
+
 #. Common issue 2
 
 .. _related-settings:
