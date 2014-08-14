@@ -20,6 +20,15 @@ What is a broken linkage?
 
 A broken linkage is when a program or a shared library is trying to link against a library that it can't find.
 
+``conda build`` will notify you of broken linkages with a message during post build verification::
+
+  Broken dynamic library linkage detected:
+
+    BrokenLinkage: curve_keygen can't find link target 'libsodium.so.4'
+    BrokenLinkage: libzmq.so.3.1.0 can't find link target 'libsodium.so.4'
+
+Broken linkages are **fatal**!  They must be fixed for the package to function.
+
 On linux, you can use the program ``ldd`` to inspect what shared libraries something is trying to link against.  A broken linkage might look something like this
 
 .. code-block:: bash
@@ -42,15 +51,6 @@ A valid entry might look like
 .. code-block:: bash
 
     libsodium.so.4 => /home/builder/anaconda/envs/_build/lib/./libsodium.so.4 (0x00007f6ab95a5000)
-
-``conda build`` will notify you of broken linkages with a message during post build verification::
-
-  Broken dynamic library linkage detected:
-
-    BrokenLinkage: curve_keygen can't find link target 'libsodium.so.4'
-    BrokenLinkage: libzmq.so.3.1.0 can't find link target 'libsodium.so.4'
-
-Broken linkages are **fatal**!  They must be fixed for the package to function.
 
 What causes broken linkages?
 ----------------------------
