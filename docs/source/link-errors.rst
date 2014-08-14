@@ -68,15 +68,15 @@ What causes external linkages
 
 An external linkage implies that the recipe does not provide a library.  The system falls back to its ``<SOMETHING>_PATH`` and links to dependent libraries it finds there.
 
-This may be fine: some system libraries currently do not have a conda recipe and therefore must already live somehwere on your system.  DynamicLibrary's `allowed_outside <https://github.com/conda/conda-build/blob/0cd18c5e51a741a5b7d05d63ad10f13e2aab7c32/conda_build/dll.py#L842-L850>`_ method permits common libraries to live outside of the build root without creating an external linkage warning.
-
 How to fix external linkages
 ----------------------------
 
-An external linkage doesn't necessarily have to be fixed.  The built package will likely work fine on the system it was built on.
+**An external linkage doesn't necessarily have to be fixed**: The built package will likely work fine on the system it was built on.
+
+In fact, some system libraries currently do not have a conda recipe and therefore must already live somehwere on your system.  DynamicLibrary's `allowed_outside <https://github.com/conda/conda-build/blob/0cd18c5e51a741a5b7d05d63ad10f13e2aab7c32/conda_build/dll.py#L842-L850>`_ method permits common libraries to live outside of the build root **without** creating an external linkage warning.
 
 You can squelch external linkage messages by adding elements to the ``extra_external`` section of your build recipe.
 
-However, external linkages should be fixed if you want to distribute the built package.
+However, external linkages **should** be fixed if you want to distribute the built package.
 
 To fix external linkages ...
