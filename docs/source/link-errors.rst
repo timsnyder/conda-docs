@@ -43,6 +43,15 @@ A valid entry might look like
 
     libsodium.so.4 => /home/builder/anaconda/envs/_build/lib/./libsodium.so.4 (0x00007f6ab95a5000)
 
+``conda build`` will notify you of broken linkages with a message during post build verification::
+
+  Broken dynamic library linkage detected:
+
+    BrokenLinkage: curve_keygen can't find link target 'libsodium.so.4'
+    BrokenLinkage: libzmq.so.3.1.0 can't find link target 'libsodium.so.4'
+
+Broken linkages are **fatal**!  They must be fixed for the package to function.
+
 What causes broken linkages?
 ----------------------------
 
