@@ -114,5 +114,3 @@ Linkage related settings
 
 #. allow_x11
 #. extra_external
-#. forgiving
-#. allow_somethign_or_other
