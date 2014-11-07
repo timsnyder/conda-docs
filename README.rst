@@ -5,21 +5,26 @@ Conda documentation
 This repository includes documentation for all of conda, including
 conda-build.
 
-The website is at http://conda.pydata.org/ and the docs are at http://conda.pydata.org/docs/.
-
 Feel free to make pull requests against this repo for suggested changes. All
 changes are welcome, from typo fixes to new documents to refactoring.
+
+This document will help you get up and running with editing, building, and viewing the documentation from the source tree.
+
+There are two pieces in this repository: the conda landing website at http://conda.pydata.org/ and the actual docs are at http://conda.pydata.org/docs/.
 
 Website
 =======
 
-You will need to
+If you do not have conda installed yet, you can do so from http://conda.pydata.org/miniconda.html.
 
-    conda install -c asmeurer sphinxjp.themes.basicstrap cloud_sptheme
+Create and activate a conda environment with the dependencies for building the website
+
+    conda create --name conda-docs --channel asmeurer sphinxjp.themes.basicstrap cloud_sptheme
+    activate conda-docs
 
 Use
 
-    cd web
+    cd conda-docs/web
     make html
 
 to build the site.  The result will be in web/build/html.
@@ -31,14 +36,15 @@ To check that the links are correct, use
 Docs
 ====
 
-The docs have several dependencies. You can install them all with
+If you wish to work on the actual documentation, you must also install conda-docs-deps and conda-build
 
-    conda install -c asmeurer conda-docs-deps
+    activate conda-docs
+    conda install --channel asmeurer conda-docs-deps
 
-Furthermore you will need to have conda-build installed to generate the help
+Furthermore you will need to have conda-build installed in the root environment to generate the help
 pages for the conda-build commands.
 
-    conda install -n root conda-build
+    conda install --name root conda-build
 
 Unfortunately the conda-docs-deps package is not available for Windows because
 we do not have a conda package for perl on Windows yet.
