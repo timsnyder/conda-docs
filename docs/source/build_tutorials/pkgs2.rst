@@ -107,8 +107,8 @@ Now, let’s go get a copy of the Pyfaker’s meta.yaml for us to edit.
 
 In your browser, go to  https://github.com/conda/conda-recipes/ .
 
-In the top search box, search for the package named "pyfaker." In the search results, you will see a link to
-the ``pyfaker/meta.yaml`` file. Open that file.
+In the top search box, search for the package named "fake-factory". In the search results, you will see a link to
+the ``python/pyfaker/meta.yaml`` file. Open that file.
 
 To save this small file locally, copy its contents, open your favorite text editor, open a new file, and paste its
 contents.
