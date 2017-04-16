@@ -1,13 +1,14 @@
-=============
-Get more help
-=============
+Help & reference
+================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   faq
-   troubleshooting
-   examples/examples
+   /using/cheatsheet
+   /glossary
+   /commands
+   /faq
+   /troubleshooting
    support
-
-Please see also the :doc:`/using/cheatsheet`.
+   /changelog
+   /license

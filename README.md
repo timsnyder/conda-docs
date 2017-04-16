@@ -4,7 +4,7 @@
 This repository includes documentation for all of conda, including
 conda-build.
 
-The website is at http://conda.pydata.org/ and the docs are at http://conda.pydata.org/docs/.
+The website is at https://conda.io/ and the docs are at https://conda.io/docs/.
 
 Feel free to make pull requests against this repo for suggested changes. All
 changes are welcome, from typo fixes to new documents to refactoring.
@@ -31,15 +31,14 @@ To check that the links are correct, use
 
 The docs have several dependencies. You can install them all with
 
-    conda create -n conda-docs -c asmeurer conda-docs-deps python=3
+    conda create -n conda-docs python=3 sphinx sphinx_rtd_theme numpydoc
+    source activate conda-docs
+    conda install -c asmeurer help2man man2html
 
 Furthermore you will need to have conda-build installed to generate the help
 pages for the conda-build commands.
 
     conda install -n root conda-build pycrypto
-
-Unfortunately the conda-docs-deps package is not available for Windows because
-we do not have a conda package for perl on Windows yet.
 
 Then run
 
@@ -60,4 +59,4 @@ The website and docs are deployed automatically to GitHub pages (the
 master. Travis will build docs on pull requests to make sure there are no
 build warnings or errors, but it only deploys it on master.
 
-The site http://conda.pydata.org points to the GitHub pages of this repo.
+The site https://conda.io points to the GitHub pages of this repo.

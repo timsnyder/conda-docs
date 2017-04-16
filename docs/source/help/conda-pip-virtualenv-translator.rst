@@ -1,6 +1,12 @@
-============================
 conda vs. pip vs. virtualenv
 ============================
+
+If you are already familiar with pip or virtualenv, please see our chart comparing 
+:download:`Conda, pip, and virtualenv <conda-pip-virtualenv-translator.html>`.
+
+.. raw:: html
+
+        <html><head><meta http-equiv="refresh" content="0; URL='../_downloads/conda-pip-virtualenv-translator.html'" /></head><body></body></html>
 
 If you’ve used pip and virtualenv in the past, you can use conda to perform all 
 of the same operations. Pip is a package manager, and Virtualenv is an 
@@ -10,7 +16,7 @@ environment manager. Conda is both.
 Task                                    Conda package and environment manager command              Pip package manager command                                                Virtualenv environment manager command
 =====================================   ========================================================   ========================================================================   ========================================================
 Install a package                       ``conda install $PACKAGE_NAME``                            ``pip install $PACKAGE_NAME``                                              X
-Update a package                        ``conda update --name $PACKAGE_NAME``                      ``pip install --upgrade $PACKAGE_NAME``                                    X
+Update a package                        ``conda update --name $ENVIRONMENT_NAME $PACKAGE_NAME``                      ``pip install --upgrade $PACKAGE_NAME``                                    X
 Update package manager                  ``conda update conda``                                     Linux/OSX: ``pip install -U pip`` Win: ``python -m pip install -U pip``    X
 Uninstall a package                     ``conda remove --name $ENVIRONMENT_NAME $PACKAGE_NAME``    ``pip uninstall $PACKAGE_NAME``                                            X
 Create an environment                   ``conda create --name $ENVIRONMENT_NAME python``           X                                                                          ``cd $ENV_BASE_DIR; virtualenv $ENVIRONMENT_NAME``

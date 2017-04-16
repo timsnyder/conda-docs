@@ -11,8 +11,12 @@ Building a conda package with conda build involves creating a conda recipe. The 
 is a flat directory holding metadata and the scripts needed to build the package. 
 The conda package is then built from the conda recipe using the ``conda build`` command.
 
+Conda packages can be built from a variety of source code projects, most notably Python.
+Please refer to the `Setuptools documentation <https://setuptools.readthedocs.io/en/latest/>`_
+for help packing a Python project.
+
 TIP: If you are new to building packages with conda, we recommend taking our series 
-of three :doc:`build tutorials </build_tutorials/build_tutorials>`.
+of three :doc:`build tutorials </build_tutorials>`.
 
 Conda build requirements
 ========================
@@ -28,6 +32,21 @@ Please follow the :doc:`Quick install</install/quick>` instructions.
 
 OPTIONAL: If you wish to upload packages to Anaconda.org , an `Anaconda.org <http://anaconda.org>`_ 
 account and client are required.
+
+Update conda build
+~~~~~~~~~~~~~~~~~~
+
+It is important to keep your version of ``conda build`` up to date to take advantage of
+bug fixes and new features.
+
+**All platforms:** Upgrade conda-build:
+
+.. code-block:: bash
+
+  conda update conda
+  conda update conda-build
+
+Release notes are available on the `conda-build Github page. <https://github.com/conda/conda-build/releases>`_
 
 Conda recipe files overview
 ===========================
@@ -48,6 +67,7 @@ Conda-build invokes the following steps in this order:
   #. Downloads the source into a cache.
   #. Extracts the source into the *source directory*.
   #. Applies any patches.
+  #. If source was necessary to fill any metadata values, the metadata is re-evaluated.
   #. Creates a *build environment* and installs the build dependencies there.
   #. Runs the actual build script. The current working directory is the source 
      directory with environment variables set. The build script installs into 
@@ -69,6 +89,25 @@ the public.
 
 The :ref:`conda skeleton <skeleton_ref>` command can help to make skeleton
 recipes for common repositories, such as `PyPI <https://pypi.python.org/pypi>`_.
+
+Adding Windows start menu items
+===============================
+
+When a package is installed it can add a shortcut to the Windows start menu. 
+Conda and conda build handle this with the 
+package `menuinst <https://github.com/ContinuumIO/menuinst>`_, which only 
+supports Windows at this time. Instructions for using menuinst are available 
+on `the menuinst wiki <https://github.com/ContinuumIO/menuinst/wiki>`_.
+
+The easiest way to ensure a package made 
+with `conda constructor <https://github.com/conda/constructor>`_ does not 
+install any menu shortcuts is by removing ``menuinst`` from the list of conda 
+packages included. To do this, add the following to the constuct.yaml file:
+
+.. code-block:: yaml
+
+  exclude:
+    - menuinst
 
 More information about meta.yaml
 ================================

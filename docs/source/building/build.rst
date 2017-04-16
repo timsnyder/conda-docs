@@ -4,9 +4,10 @@ Building packages
 .. toctree::
    :maxdepth: 1
 
-   /build_tutorials/build_tutorials
+   /build_tutorials
    bpp
-   custom-channels
-   ../signed-packages
-   bdist_conda
+   shared-libraries
+   /custom-channels
+   /signed-packages
+   /bdist_conda
    sample-recipes

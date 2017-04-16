@@ -3,18 +3,19 @@
 The meta.yaml file
 ==================
 
-All the metadata in the conda build recipe is specified in the ``meta.yaml`` file, 
+.. contents:: Sections of ``meta.yaml``:
+
+All the metadata in the conda build recipe is specified in the ``meta.yaml`` file,
 as in this example of a simple meta.yaml file:
 
 .. literalinclude:: /build_tutorials/meta.yaml
 
 NOTE: All sections are optional except for package/name and package/version.
 
-NOTE: All headers should appear exactly once. If they appear multiple times, only 
-the last will be remembered. For example, the "package:" header should only appear 
+NOTE: All headers should appear exactly once. If they appear multiple times, only
+the last will be remembered. For example, the "package:" header should only appear
 once in the file.
 
-.. contents:: Sections of ``meta.yaml``:
 
 Package section
 ---------------
@@ -32,9 +33,9 @@ Lower case name of package, may contain '-' but no spaces
 Package version
 ~~~~~~~~~~~~~~~
 
-Version of package. Should use the PEP-386 verlib conventions. Note that YAML will 
-interpret versions like 1.0 as floats, meaning that 1.0 will be the same as 1. To 
-avoid this, always put the version in quotes, so that it will be interpreted as a 
+Version of package. Should use the PEP-386 verlib conventions. Note that YAML will
+interpret versions like 1.0 as floats, meaning that 0.10 will be the same as 0.1. To
+avoid this, always put the version in quotes, so that it will be interpreted as a
 string.
 
 .. code-block:: yaml
@@ -44,18 +45,16 @@ string.
 
 NOTE: The version cannot contain a dash '-' character.
 
-NOTE: Post-build versioning: In some cases, you may not know the version, build 
-number, or build string of the package until after it is built. In this case, you 
-can write files named ``__conda_version__.txt``, ``__conda_buildnum__.txt``, or 
-``__conda_buildstr__.txt`` to the source directory, and the contents of the file 
-will be used as the version, build number, or build string, respectively (and the 
-respective metadata from the ``meta.yaml`` will be ignored).
+
+NOTE: Post-build versioning: In some cases, you may not know the version, build
+number, or build string of the package until after it is built. In this case, you
+can perform :ref:`jinja-templates` or utilize :ref:`git-env` and :ref:`inherited-env-vars`.
 
 Source section
 --------------
 
-The source section specifies where the source code of the package is coming from. 
-The source may come from a tarball file, git, hg, or svn, may be a local path, 
+The source section specifies where the source code of the package is coming from.
+The source may come from a tarball file, git, hg, or svn, may be a local path,
 and may contain patches.
 
 Source from tarball
@@ -64,13 +63,11 @@ Source from tarball
 .. code-block:: yaml
 
   source:
-    fn: bsdiff-1.1.14.tar.gz
     url: https://pypi.python.org/packages/source/b/bsdiff4/bsdiff4-1.1.4.tar.gz
     md5: 29f6089290505fc1a852e176bd276c43
     sha1: f0a2c9a30073449cfb7d171c57552f3109d93894
     sha256: 5a022ff4c1d1de87232b1c70bde50afbb98212fd246be4a867d8737173cf1f8f
 
-NOTE: If you use ``url`` above, then ``fn`` is also required.
 
 Source from git
 ~~~~~~~~~~~~~~~
@@ -105,13 +102,21 @@ Source from svn
 Source from a local path
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the path is relative it is taken relative to the recipe directory. The source 
+If the path is relative it is taken relative to the recipe directory. The source
 will be copied to the work directory before building:
 
 .. code-block:: yaml
 
   source:
     path: ../src
+
+If the local path is a git or svn repository, you will get the corresponding environment
+variables defined in your build environment.  The only practical difference between
+``git_url`` or ``hg_url`` and ``path`` as source arguments is that ``git_url`` and ``hg_url``
+would be clones of a repository and ``path`` would be a copy of the repository.  Using
+``path`` will allow you to build packages with unstaged/uncommitted changes in
+the working directory. ``git_url`` can only build up to the latest commit.
+
 
 Patches
 ~~~~~~~
@@ -125,6 +130,10 @@ Patches may optionally be applied to the source:
     patches:
       - my.patch # the patch file is expected to be found in the recipe
 
+NOTE: Conda-build will automatically determine the patch strip level.
+
+
+.. _meta-build:
 
 Build section
 -------------
@@ -132,14 +141,14 @@ Build section
 Build number and string
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The build number should be incremented for new builds of the same version. The number 
-defaults to zero. The string defaults to the default conda build string plus the 
+The build number should be incremented for new builds of the same version. The number
+defaults to zero. The string defaults to the default conda build string plus the
 build number.
 
 .. code-block:: yaml
 
   build:
-    number: 1       
+    number: 1
     string: abc
 
 NOTE: The build string cannot contain a dash '-' character.
@@ -159,7 +168,7 @@ This creates a Python entry point named bsdiff4 that calls bsdiff4.cli.main_bsdi
 Python.app
 ~~~~~~~~~~
 
-If osx_is_app is set, entry points will use python.app instead of python in OS X. 
+If osx_is_app is set, entry points will use python.app instead of python in OS X.
 The default is False.
 
 .. code-block:: yaml
@@ -183,9 +192,9 @@ SEE ALSO: :ref:`features` section below for additional information.
 Track features
 ~~~~~~~~~~~~~~
 
-To enable a feature, a user should install a package that tracks that feature. A 
-package can have a feature, or track that feature, or both, or neither. Usually 
-it is best for the package that tracks a feature to be a metapackage that does 
+To enable a feature, a user should install a package that tracks that feature. A
+package can have a feature, or track that feature, or both, or neither. Usually
+it is best for the package that tracks a feature to be a metapackage that does
 not have the feature.
 
 SEE ALSO: :ref:`features` section below for additional information.
@@ -206,6 +215,21 @@ This is needed for some packages that use setuptools specific features. Default 
   build:
     preserve_egg_dir: True
 
+Skip compiling some .py files into .pyc files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some packages ship .py files that cannot be compiled, such as those that contain
+templates. Some packages also ship .py files that should not be compiled yet,
+because the Python interpreter that will be used is not known at build-time. In
+these cases conda-build can skip attempting to compile these files.
+
+.. code-block:: yaml
+
+  build:
+    skip_compile_pyc:
+      - templates/*.py          # These should not (and cannot) be compiled
+      - share/plugins/gdb/*.py  # The python embedded into gdb is unknown
+
 No link
 ~~~~~~~
 
@@ -215,12 +239,12 @@ A list of globs for files that should always be copied and never soft linked or 
 
   build:
     no_link:
-      - bin/*.py # Don't link any .py files in bin/
+      - bin/*.py  # Don't link any .py files in bin/
 
 Script
 ~~~~~~
 
-Used instead of build.sh or bld.bat. For short build scripts, this can be more convenient. 
+Used instead of build.sh or bld.bat. For short build scripts, this can be more convenient.
 You may need to use selectors (see below) to use different scripts for different platforms.
 
 .. code-block:: yaml
@@ -257,12 +281,14 @@ Force files to always be included, even if they are already in the environment f
 Relocation
 ~~~~~~~~~~
 
-Advanced features. The following four keys (binary_relocation, detect_binary_files_with_prefix, has_prefix_files and binary_has_prefix_files) may be required to relocate files from the build environment to the installation environment.  See :ref:`relocatable` section below.
+Advanced features. The following four keys (binary_relocation, has_prefix_files and binary_has_prefix_files, ignore_prefix_files) may be used to control relocatability files from the build environment to the installation environment.  See :ref:`relocatable` section below.
 
 Binary relocation
 ~~~~~~~~~~~~~~~~~
 
-Whether binary files should be made relocatable using install_name_tool on OS X or patchelf on Linux. Default is True.
+Whether binary files should be made relocatable using install_name_tool on OS X
+or patchelf on Linux. Default is True. Accepts False (no relocation for any
+files) or a list of files (relocation only for listed files.)
 
 .. code-block:: yaml
 
@@ -272,17 +298,40 @@ Whether binary files should be made relocatable using install_name_tool on OS X 
 Detect binary files with prefix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Binary files may contain the build prefix and need it replaced with the install prefix at installation time.  Conda can automatically identify and register such files. Default is False.
+Binary files may contain the build prefix and need it replaced with the install
+prefix at installation time. Conda can automatically identify and register such
+files. Default is ``True``. Note that this default changed from ``False`` to
+``True`` in conda-build 2.0. Setting this to ``False`` means that binary
+relocation (RPATH) replacement will still be done, but hard-coded prefixes in
+binaries will not be replaced. Prefixes in text files will still be replaced.
 
 .. code-block:: yaml
 
   build:
-    detect_binary_files_with_prefix: True
+    detect_binary_files_with_prefix: False
+
+Windows handles binary prefix replacement very differently than Unix systems
+such as Linux and macOS. At this time, we are unaware of any executable or
+library that uses hardcoded embedded paths for locating other libraries or
+program data on Windows. Instead, Windows follows `DLL search path rules
+<https://msdn.microsoft.com/en-us/library/7d83bc18.aspx>`_, or more natively
+supports relocatability using relative paths. Because of this, conda ignores
+most prefixes. However, pip creates executables for Python entry points that
+*do* use embedded paths on Windows. Conda-build thus detects prefixes in all
+files and records them by default. If you are getting errors about path length
+on Windows, you should try to disable ``detect_binary_files_with_prefix``. Newer
+versions of Conda (recent 4.2.x series releases and up) should have no problems
+here, but earlier versions of conda do erroneously try to apply any binary
+prefix replacement.
+
 
 Binary has prefix files
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-You may also elect to specify files with prefixes individually:
+By default, conda-build tries to detect prefixes in all files. You may also
+elect to specify files with binary prefixes individually. This allows you to
+specify the type of file as binary, when it may be incorrectly detected as text
+for some reason. Binary files are those containing NULL bytes.
 
 .. code-block:: yaml
 
@@ -294,7 +343,12 @@ You may also elect to specify files with prefixes individually:
 Text files with prefix files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Text files (files containing no NULL bytes) may contain the build prefix and need it replaced with the install prefix at installation time.  Conda will automatically register such files.  Binary files that contain the  build prefix are generally handled differently (see binary_has_prefix_files or detect_binary_files_with_prefix), but there may be cases where such a binary file needs to be treated as an ordinary text file, in which case they need to be identified:
+Text files (files containing no NULL bytes) may contain the build prefix and
+need it replaced with the install prefix at installation time. Conda will
+automatically register such files. Binary files that contain the build prefix
+are generally handled differently (see binary_has_prefix_files), but there may
+be cases where such a binary file needs to be treated as an ordinary text file,
+in which case they need to be identified:
 
 .. code-block:: yaml
 
@@ -302,6 +356,88 @@ Text files (files containing no NULL bytes) may contain the build prefix and nee
     has_prefix_files:
       - bin/file1
       - lib/file2
+
+Ignore prefix files
+~~~~~~~~~~~~~~~~~~~
+
+The ``ignore_prefix_files`` can be used to exclude some or all of the files in the build recipe
+from the list of files that have the build prefix replaced with the install prefix.
+
+To ignore all files in the build recipe use
+
+.. code-block:: yaml
+
+    build:
+      ignore_prefix_files: True
+
+To specify individual file names use
+
+.. code-block:: yaml
+
+    build:
+      ignore_prefix_files:
+        - file1
+
+This setting is independent of RPATH replacement. Use the
+``detect_binary_files_with_prefix`` setting to control that behavior.
+
+Skipping builds
+~~~~~~~~~~~~~~~
+
+Whether conda-build should skip the build of this recipe. Particularly useful for defining recipes which are platform specific.
+Default is False.
+
+.. code-block:: yaml
+
+  build:
+    skip: True  # [not win]
+
+Architecture independent packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The conda build system allows you to specify "no architecture" when building a package, thus making it compatible
+with all platforms and architectures. Noarch packages can be installed on any platform.
+
+
+.. code-block:: yaml
+
+     build:
+       noarch_python: True
+
+
+Include build recipe
+~~~~~~~~~~~~~~~~~~~~
+
+The full conda build recipe and rendered ``meta.yaml`` file is included in the :ref:`package_metadata`
+by default. This can be disabled with
+
+.. code-block:: yaml
+
+    build:
+      include_recipe: False
+
+
+Use Environment Variables
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Normally the build script in ``build.sh`` or ``bld.bat`` does not
+pass through environment variables from the command line. Only
+environment variables documented in :ref:`env-vars` are seen by
+the build script.  To "white-list" environment variables that should be passed
+through to the build script, use ``script_env``.
+
+.. code-block:: yaml
+
+   build:
+     script_env:
+       - MYVAR
+       - ANOTHER_VAR
+
+If a listed environment variable is missing from the environment seen
+by the ``conda build`` process itself, then a ``UserWarning`` will be
+emitted during the build process and the variable will remain
+undefined.
+
 
 Requirements section
 --------------------
@@ -313,13 +449,14 @@ The build and runtime requirements. Dependencies of these requirements are inclu
 Build
 ~~~~~
 
-Packages required to build the package. Python and numpy must be listed explicitly if they are required.
+Packages required to build the package. Python and NumPy must be listed explicitly if they are required.
 
 .. code-block:: yaml
 
   requirements:
     build:
       - python
+
 
 Run
 ~~~
@@ -333,6 +470,17 @@ Packages required to run the package. These are the dependencies that will be in
       - python
       - argparse # [py26]
       - six >=1.8.0
+
+Some users may wish to build a recipe against different versions of NumPy and ensure that each version is part of the package dependencies, which can be done by listing ``numpy x.x`` as a requirement in meta.yaml and using ``conda build`` with a NumPy version option such as ``--numpy 1.7``. Note that the line in the meta.yaml file should literally say ``numpy x.x`` and should not have any numbers. If the meta.yaml file uses ``numpy x.x``, then it is required to use the ``--numpy`` option with ``conda build``.
+
+.. code-block:: yaml
+
+  requirements:
+    run:
+      - python
+      - numpy x.x
+
+.. _meta-test:
 
 Test section
 ------------
@@ -350,6 +498,21 @@ Test files which are copied from the recipe into the (temporary) test directory 
     files:
       - test-data.txt
 
+Source files
+~~~~~~~~~~~~
+
+Test files which are copied from the source work directory into the (temporary) test directory which are needed during testing:
+
+.. code-block:: yaml
+
+  test:
+    source_files:
+      - test-data.txt
+      - some/directory
+      - some/directory/pattern*.sh
+
+This capability was added in conda-build 2.0.
+
 Test requirements
 ~~~~~~~~~~~~~~~~~
 
@@ -359,7 +522,7 @@ In addition to the runtime requirements, you can specify requirements needed dur
 
   test:
     requires:
-      nose
+      - nose
 
 Test commands
 ~~~~~~~~~~~~~
@@ -405,6 +568,252 @@ The script run_test.sh (or .bat/.py/.pl) will be run automatically if it is part
 
 NOTE: Python or Perl .py/.pl scripts are only valid as part of Python/Perl packages, respectively.
 
+
+Outputs section
+---------------
+
+The outputs section is used to explicitly specify packaging steps. It supports
+multiple outputs, as well as different package output types. The format is a
+list of mappings. Build strings for subpackages are determined by their runtime
+dependencies. This support was added in conda-build 2.1.0.
+
+.. code-block:: none
+
+   outputs:
+     - name: some-subpackage
+     - name: some-other-subpackage
+
+
+NOTE: If any output is specified in the outputs section, the default packaging
+behavior of conda-build is bypassed. In other words, if any subpackage is
+specified, then you will not get the normal top-level build for this recipe
+without explicitly defining a subpackage for it. This is an alternative to the
+existing behavior, not an addition to it. See the :ref:`implicit_metapackages`
+section below for more information.
+
+
+Specifying files to include in output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Files to be included in the package can be specified in either of two ways:
+explicit file lists, or scripts that move files into the build prefix.
+
+Explicit file lists are relative paths from the root of the build prefix.
+Explicit file lists support glob expressions. Directory names are also
+supported, and will recursively include contents.
+
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       files:
+         - a-file
+         - a-folder
+         - *.some-extension
+         - somefolder/*.some-extension
+
+
+Scripts that create or move files into the build prefix can be any kind of
+script. Known script types need only specify the script name. Currently the list
+of recognized extensions is ``py``, ``bat``, ``ps1``, and ``sh``.
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       script: move-files.py
+
+
+The interpreter command must be specified if the file extension is not
+"recognized."
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       script: some-script.extension
+       script_interpreter: program plus arguments to run script
+
+
+For scripts that move or create files, a fresh copy of the working directory is
+provided at the start of each script execution. This ensures results between
+scripts are independent of one another.
+
+Note that for either the file list or the script approach, having more than one
+package contain a given file is not explicitly forbidden, but may prevent
+installation of both packages simultaneously.  Conda disallows this condition,
+because it creates ambiguous runtime conditions.
+
+
+Subpackage requirements
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Subpackages support runtime and test requirements. Build requirements are not
+supported, because subpackages are created after the build phase is complete. If
+you need a tool to accomplish subpackaging, put it in the top-level package
+requirements/build section.
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       requirements:
+         - some-dep
+
+
+Subpackage dependencies propagate to the top-level package if and only if the
+subpackage is listed as a requirement.
+
+.. code-block:: none
+
+   requirements:
+     run:
+       - some-dep-that-will-propagate
+
+   outputs:
+     - name: some-dep-that-will-propagate
+       requirements:
+         - some-dep
+
+In this instance, the top-level package will depend on both
+``some-dep-that-will-propagate`` and ``some-dep`` as runtime requirements.
+
+.. _implicit_metapackages:
+
+Implicit metapackages
+~~~~~~~~~~~~~~~~~~~~~
+
+When viewing the top-level package as a collection of smaller subpackages, it
+may be convenient to define the top-level package as a composition of several
+subpackages. If you do this, and you do not define a subpackage name that
+matches the top-level package/name, then conda-build will create a metapackage
+for you. This metapackage will have runtime requirements drawn from its
+dependency subpackages, for the sake of accurate build strings.
+
+.. code-block:: none
+
+   package:
+     name: subpackage-example
+     version: 1.0
+
+   requirements:
+     run:
+       - subpackage1
+       - subpackage2
+
+   outputs:
+     - name: subpackage1
+       requirements:
+         - some-dep
+     - name: subpackage2
+       requirements:
+         - some-other-dep
+     - name: subpackage3
+       requirements:
+         - some-totally-exotic-dep
+
+
+In that example, a metapackage for subpackage-example will be created. It will
+have runtime dependencies on ``subpackage1``, ``subpackage2``, ``some-dep``, and
+``some-other-dep``.
+
+
+Subpackage tests
+~~~~~~~~~~~~~~~~
+
+Subpackages may be tested independently of the top-level package. Independent
+test script files for each separate package are specified under the subpackage's
+test section. These files support the same formats as the top-level run_test.*
+scripts: ``.py``, ``.pl``, ``.bat``, ``.sh``. These may be extended to support
+other script types in the future.
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       test:
+         script: some-other-script.py
+
+
+The run_test.* scripts apply only to the top-level package, by default. To apply
+them also to subpackages, they can be explicitly listed in the script section:
+
+.. code-block:: none
+
+   outputs:
+     - name: subpackage-name
+       test:
+         script: run_test.py
+
+
+Test requirements for subpackages are not supported. Instead, subpackage tests
+install their runtime requirements (but not the run requirements for the
+top-level package) and the test-time requirements of the top-level package.
+
+.. code-block:: none
+
+   requirements:
+     run:
+       - some-top-level-run-req
+
+   test:
+     requires:
+       - some-test-dep
+
+   outputs:
+     - name: subpackage-name
+       requirements:
+         - subpackage-run-req
+       test:
+         script: run_test.py
+
+
+In this example, the test for subpackage-name will install ``some-test-dep`` and
+``subpackage-run-req``, but not ``some-top-level-run-req``.
+
+
+Output type
+~~~~~~~~~~~
+
+Conda-build supports creating packages other than conda packages. Right now,
+that support includes only wheels. RPMs, .deb files, and others may come as
+demand appears.  If type is not specified, the default value is ``conda``.
+
+
+.. code-block:: none
+
+   requirements:
+     build:
+       - wheel
+
+   outputs:
+     - name: name-of-wheel-package
+       type: wheel
+
+You currently must include the ``wheel`` package in your top-level
+requirements/build section in order to build wheels.
+
+When specifying type, the name field is optional, and defaults to the
+package/name field for the top-level recipe.
+
+.. code-block:: none
+
+   requirements:
+     build:
+       - wheel
+
+   outputs:
+     - type: wheel
+
+Conda-build currently only knows how to test conda packages. Conda-build does
+support using Twine to upload packages to PyPI. See the conda-build help output
+for the list of arguments accepted that will be passed through to Twine. Note
+that you must use pip to install Twine in order for this to work.
+
+
+.. _about:
+
 About section
 -------------
 
@@ -415,7 +824,18 @@ Identifying information about the package. Displays in Anaconda.org channel.
   about:
     home: https://github.com/ilanschnell/bsdiff4
     license: BSD
+    license_file: LICENSE
     summary: binary diff and patch using the BSDIFF4-format
+
+License file
+~~~~~~~~~~~~
+
+A file containing the software license can be added to the package metadata.  Please note that many licenses require the license statement to be distributed with the package.  The filename is relative to the source directory.
+
+.. code-block:: yaml
+
+  about:
+    license_file: LICENSE
 
 App section
 -----------
@@ -462,6 +882,97 @@ If own_environment is true, installing the app through the launcher will install
   app:
     own_environment: True
 
+Extra section
+-------------
+
+The extra section is a schema-free area for storing non-conda specific metadata in standard YAML form.
+For example, to store recipe maintainer information, one could do:
+
+.. code-block:: yaml
+
+  extra:
+    maintainers:
+     - name of maintainer
+
+.. _jinja-templates:
+
+Templating with Jinja
+---------------------
+
+Conda build supports Jinja templating in the ``meta.yaml`` file. For example, here's a meta.yaml that
+would work with the GIT values defined for git repositores. In this example, the recipe is included
+at the base directory of the git repository, so the ``git_url`` is ``../``:
+
+.. code-block:: yaml
+
+     package:
+       name: mypkg
+       version: {{ GIT_DESCRIBE_TAG }}
+
+     build:
+       number: {{ GIT_DESCRIBE_NUMBER }}
+
+       # Note that this will override the default build string with the Python
+       # and NumPy versions
+       string: {{ GIT_BUILD_STR }}
+
+     source:
+       git_url: ../
+
+Conda-build will make sure the jinja2 variables you use are defined and produces
+a clear error if it is not.
+
+It is also possible to use a different syntax for these environment variables
+that allows default values to be set, although it is somewhat more verbose.  This is the
+example above using the syntax that allows defaults:
+
+.. code-block:: yaml
+
+     package:
+       name: mypkg
+       version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+
+     build:
+       number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+
+       # Note that this will override the default build string with the Python
+       # and NumPy versions
+       string: {{ environ.get('GIT_BUILD_STR', '') }}
+
+     source:
+       git_url: ../
+
+One further possibility using templating is obtaining data from your downloaded
+source code.  For example, we can process a project's setup.py and obtain the
+version and other metadata:
+
+.. code-block:: none
+
+    {% set data = load_setup_py_data() %}
+
+    package:
+      name: conda-build-test-source-setup-py-data
+      version: {{ data.get('version') }}
+
+    # source will be downloaded prior to filling in jinja templates
+    # Example assumes that this folder has setup.py in it
+    source:
+      path_url: ../
+
+These functions are completely compatible with any other variables (git, mercurial, or whatever.)
+
+Extending this to arbitrary other functions requires that functions be predefined before jinja
+processing, which in practice means changing the conda-build source code.  Please inquire at the
+`conda-build issue tracker <https://github.com/conda/conda-build/issues>`_.
+
+See the `Jinja2 template documentation <http://jinja.pocoo.org/docs/dev/templates/>`_
+for more information, or `the list of available environment
+variables <https://conda.io/docs/building/environment-vars.html>`_.
+
+Jinja templates are evaluated during the build process. To retrieve a fully rendered ``meta.yaml``
+use the :doc:`../commands/build/conda-render`.
+
+
 Preprocessing selectors
 -----------------------
 
@@ -469,6 +980,8 @@ In addition, you can add selectors to any line, which are used as part of a
 preprocessing stage. Before the yaml file is read, each selector is evaluated,
 and if it is False, the line that it is on is removed.  A selector is of the
 form ``# [<selector>]`` at the end of a line.
+
+NOTE: Preprocessing selectors are evaluated after Jinja templates.
 
 For example
 
@@ -483,14 +996,22 @@ variables are defined. Unless otherwise stated, the variables are booleans.
 
 .. list-table::
 
+   * - ``x86``
+     - True if the system architecture is x86 (32-bit and 64-bit) for Intel or AMD chips
+   * - ``x86_64``
+     - True if the system architecture is x86_64 (64-bit) for Intel or AMD chips
    * - ``linux``
      - True if the platform is Linux
    * - ``linux32``
      - True if the platform is Linux and the Python architecture is 32-bit
    * - ``linux64``
      - True if the platform is Linux and the Python architecture is 64-bit
-   * - ``armv6``
+   * - ``armv6l``
      - True if the platform is Linux and the Python architecture is armv6l
+   * - ``armv7l``
+     - True if the platform is Linux and the Python architecture is armv7l
+   * - ``ppc64le``
+     - True if the platform is Linux and the Python architecture is ppc64le
    * - ``osx``
      - True if the platform is OS X
    * - ``unix``
@@ -508,16 +1029,14 @@ variables are defined. Unless otherwise stated, the variables are booleans.
      - True if the Python major version is 3
    * - ``py2k``
      - True if the Python major version is 2
-   * - ``py26``
-     - True if the Python version is 2.6
    * - ``py27``
      - True if the Python version is 2.7
-   * - ``py33``
-     - True if the Python version is 3.3
    * - ``py34``
      - True if the Python version is 3.4
+   * - ``py35``
+     - True if the Python version is 3.5
    * - ``np``
-     - The NumPy version as a two digit string (like ``'17'``).  See also the
+     - The NumPy version as an integer (like ``111``).  See also the
        ``CONDA_NPY`` environment variable :ref:`below <build-envs>`.
 
 Because the selector is any valid Python expression, complicated logic is
@@ -545,6 +1064,8 @@ need to put the same selector on multiple lines.
 
 Features
 --------
+
+See also :ref:`build-features`.
 
 Features are a way to track differences in two packages that have the same
 name and version.  For example, a feature might indicate a specialized
@@ -634,10 +1155,12 @@ relocatable:
   prefix at install time.  This works by padding the install prefix with null
   terminators, such that the length of the binary file remains the same.  The
   build prefix must therefore be long enough to accommodate any reasonable
-  installation prefix. Whenever the ``build/binary_has_prefix_files`` list is
-  not empty or ``build/detect_binary_files_with_prefix`` is set, conda will pad
+  installation prefix.  On Linux and Mac, conda-build will pad
   the build prefix (appending ``_placehold``\'s to the end of the build
-  directory name) to 80 characters.
+  directory name) to 255 characters.  Note that the prefix length was changed
+  in conda-build 2.0 from 80 characters to 255 characters.  Legacy packages with
+  80 character prefixes will need to be rebuilt to take advantage of the
+  longer prefix.
 
 - There may be cases where conda identified a file as binary, but it needs to
   have the build prefix replaced as if it were text (no padding with null

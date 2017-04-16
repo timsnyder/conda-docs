@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# (c) 2012 Continuum Analytics, Inc. / http://continuum.io
+# (c) 2012-2017 Continuum Analytics, Inc. / http://continuum.io
 # All Rights Reserved
 #
 # conda is distributed under the terms of the BSD 3-clause license.
@@ -32,11 +32,12 @@ sys.path.insert(0, os.path.abspath('../..'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'sphinx.ext.ifconfig',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.graphviz',
+    'sphinx.ext.ifconfig',
     'sphinx.ext.inheritance_diagram',
+    # 'sphinx.ext.napoleon',
     'numpydoc',
 ]
 
@@ -54,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Conda'
-copyright = u'2015, Continuum Analytics'
+copyright = u'2017, Continuum Analytics'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -107,11 +108,7 @@ modindex_common_prefix = ['conda.']
 # extensions += ['sphinxjp.themes.basicstrap']
 # html_theme = 'basicstrap'
 
-import continuum_sphinx_theme
-
-html_theme = "continuum_sphinx_theme"
-
-html_theme_path = [continuum_sphinx_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
 
 html_context = {
     'github_user': 'conda',
